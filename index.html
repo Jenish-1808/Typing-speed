@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <input type="text" class="input-field" autofocus />
+        <div class="content-box">
+            <div class="typing-test">
+                <p></p>
+            </div>
+            <div class="content">
+                <div class="time-container">
+                    <p>Time Left</p>
+                    <span><b>60</b>s</span>
+                </div>
+                <button id="live-reset-btn">Try Again</button> 
+            </div>
+        </div>
+
+        <div id="results-box" class="hidden">
+            <h3>Typing Test Completed</h3>
+            <p>WPM: <span id="final-wpm">0</span></p>
+            <p>CPM: <span id="final-cpm">0</span></p>
+            <p>Mistakes: <span id="final-mistakes">0</span></p>
+            <button id="reset-btn">Try Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
