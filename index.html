@@ -3,34 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Typing Game</title>
+    <title>Typing Speed Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Raleway:wght@700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="wrapper">
-        <input type="text" class="input-field" autofocus />
+    <div class="container" id ="heading">
+        <h1 id = "speed">Typing Speed Test</h1>
+    </div>
+    <div class="container">
+        <input type="text" class="input-field" autofocus tabindex="-1">
+        
         <div class="content-box">
             <div class="typing-test">
-                <p></p>
+                <p id="text-display"></p>
             </div>
             <div class="content">
                 <div class="time-container">
                     <p>Time Left</p>
-                    <span><b>60</b>s</span>
+                    <span><b id="time-left">60</b>s</span>
                 </div>
-                <button id="live-reset-btn">Try Again</button> 
+                <button id="reset-btn">Try Again</button>
             </div>
         </div>
-
+        
         <div id="results-box" class="hidden">
-            <h3>Typing Test Completed</h3>
+            <h3>Typing Test Results</h3>
             <p>WPM: <span id="final-wpm">0</span></p>
             <p>CPM: <span id="final-cpm">0</span></p>
             <p>Mistakes: <span id="final-mistakes">0</span></p>
-            <button id="reset-btn">Try Again</button>
+            <button id="restart-btn">Try Again</button>
         </div>
     </div>
-
+    <audio src="s2.mp3"></audio>
     <script src="script.js"></script>
 </body>
 </html>

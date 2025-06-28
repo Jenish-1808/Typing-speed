@@ -1,13 +1,13 @@
-const typingText = document.querySelector('.typing-test p');
+const textDisplay = document.getElementById('text-display');
 const input = document.querySelector('.input-field');
-const timeDisplay = document.querySelector('.time-container span b');
+const timeDisplay = document.getElementById('time-left');
 const resultsBox = document.getElementById("results-box");
 const finalWpm = document.getElementById("final-wpm");
 const finalCpm = document.getElementById("final-cpm");
 const finalMistakes = document.getElementById("final-mistakes");
 const resetBtn = document.getElementById("reset-btn");
-const liveResetBtn = document.getElementById("live-reset-btn");
-const typingSound = new Audio('s2.mp3');  
+const restartBtn = document.getElementById("restart-btn");
+const typingSound = new Audio('s2.mp3');
 
 let timer;
 let maxTime = 60;
@@ -29,91 +29,85 @@ const paragraphs = [
     "a squirrel climbs quickly up the tree jumping from branch to branch as it looks for food while the cool wind blows through the forest making the leaves rustle"
 ];
 
-
 function loadParagraph() {
     const randomIndex = Math.floor(Math.random() * paragraphs.length);
-    typingText.innerHTML = '';
-
+    textDisplay.innerHTML = '';
     paragraphs[randomIndex].split('').forEach(char => {
-        let span = document.createElement('span');
-        span.innerText = char; 
-        typingText.appendChild(span);
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = char;
+        textDisplay.appendChild(span);
     });
-
-    typingText.querySelectorAll('span')[0].classList.add('active');
-
-    document.addEventListener('keydown', () => input.focus());
-    typingText.addEventListener('click', () => input.focus());
+    textDisplay.querySelectorAll('span')[0].classList.add('active');
+    input.focus();
 }
 
-function playTypingSound() {
-    typingSound.currentTime = 0; 
-    typingSound.play();
+function startTimer() {
+    isTyping = true;
+    timer = setInterval(() => {
+        timeLeft--;
+        timeDisplay.textContent = timeLeft;
+        if (timeLeft <= 0) finishGame();
+    }, 1000);
 }
 
-function initTyping(event) {
-    const chars = typingText.querySelectorAll('span');
-    const typedChar = input.value.charAt(charIndex);
-    const currentChar = chars[charIndex].innerText;
+function handleTyping(e) {
+    const chars = textDisplay.querySelectorAll('span');
+    const typedChar = e.data || '';
+    const currentChar = chars[charIndex].textContent;
 
-    if (charIndex < chars.length && timeLeft > 0) {
-        if (!isTyping) {
-            timer = setInterval(updateTimer, 1000);
-            isTyping = true;
-        }
+    if (!isTyping) startTimer();
 
-        if (typedChar === currentChar) {
-            chars[charIndex].classList.add('correct');
-            playTypingSound(); // Play sound only when a key is pressed
-        } else {
-            if (!(currentChar === " " && typedChar === "")) { 
-                chars[charIndex].classList.add('incorrect');
-                mistakes++;
-            }
-        }
-
+    if (typedChar === currentChar) {
+        chars[charIndex].classList.remove('active', 'incorrect');
+        chars[charIndex].classList.add('correct');
+        typingSound.currentTime = 0;
+        typingSound.play();
         charIndex++;
+        input.value = '';
         if (charIndex < chars.length) {
             chars[charIndex].classList.add('active');
+        } else {
+            finishGame();
         }
-
-        if (charIndex === chars.length) {
-            clearInterval(timer);
-            input.value = '';
-            showResults();
+    } else if (typedChar) {
+        if (!chars[charIndex].classList.contains('incorrect') && 
+            !chars[charIndex].classList.contains('correct')) {
+            mistakes++;
         }
+        chars[charIndex].classList.remove('active');
+        chars[charIndex].classList.add('incorrect');
     }
 }
 
-function updateTimer() {
-    if (timeLeft > 0) {
-        timeLeft--;
-        timeDisplay.innerText = timeLeft;
-    } else {
-        clearInterval(timer);
-        showResults();
-    }
-}
-
-function showResults() {
-    finalWpm.innerText = Math.round(((charIndex - mistakes) / 5) / (maxTime / 60));
-    finalCpm.innerText = charIndex - mistakes;
-    finalMistakes.innerText = mistakes;
+function finishGame() {
+    clearInterval(timer);
+    const minutes = (maxTime - timeLeft) / 60;
+    const wpm = Math.round(((charIndex - mistakes) / 5) / minutes) || 0;
+    const cpm = Math.round((charIndex - mistakes) / minutes) || 0;
+    finalWpm.textContent = wpm;
+    finalCpm.textContent = cpm;
+    finalMistakes.textContent = mistakes;
     resultsBox.style.display = "block";
+    resultsBox.scrollIntoView({ behavior: 'smooth' });
 }
 
 function resetGame() {
-    resultsBox.style.display = "none"; // Hide results box
-    loadParagraph();
     clearInterval(timer);
+    resultsBox.style.display = "none";
     timeLeft = maxTime;
-    charIndex = mistakes = 0;
+    charIndex = 0;
+    mistakes = 0;
     isTyping = false;
-    timeDisplay.innerText = timeLeft;
+    timeDisplay.textContent = timeLeft;
     input.value = '';
+    loadParagraph();
 }
 
-input.addEventListener("input", initTyping);
-resetBtn.addEventListener("click", resetGame);
-liveResetBtn.addEventListener("click", resetGame);
+input.addEventListener('input', handleTyping);
+resetBtn.addEventListener('click', resetGame);
+restartBtn.addEventListener('click', resetGame);
+document.addEventListener('keydown', () => input.focus());
+textDisplay.addEventListener('click', () => input.focus());
+
 loadParagraph();
